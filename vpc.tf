@@ -20,12 +20,20 @@ resource "aws_internet_gateway" "IGW" {
 }
 
 resource "aws_subnet" "public" {
-  vpc_id     = aws_vpc.main.id
   count = length(var.public_subnet_cidr)
+  vpc_id     = aws_vpc.main.id
+  
 
   cidr_block = var.public_subnet_cidr[count.index]
 
   availability_zone = local.availble_zone[count.index]
+
+ map_public_ip_on_launch = true
+
+  tags = merge( var.public_subnet_tags, local.common_Tags,{
+    Name = "${var.project}-public-${local.availble_zone[count.index]}"
+  })
+  }
 
 #   Terraform doesn’t treat arguments inside a resource block as reusable variables
 #   unless you explicitly assign them to a local variable or directly inline the full expression again.
@@ -35,16 +43,11 @@ resource "aws_subnet" "public" {
 
 #if we want we can give user a chance to add tags if they want something, check in variables.tf file
 
-  tags = merge( var.public_subnet_tags, local.common_Tags,{
-    Name = "${var.project}-public-${local.availble_zone[count.index]}"
-  })
-  map_public_ip_on_launch = true
-}
 
 resource "aws_subnet" "private" {
-  vpc_id     = aws_vpc.main.id
+  
   count = length(var.private_subnet_cidr)
-
+  vpc_id     = aws_vpc.main.id
   cidr_block = var.private_subnet_cidr[count.index]
 
   availability_zone = local.availble_zone[count.index]
@@ -69,7 +72,6 @@ resource "aws_subnet" "database" {
 
 resource "aws_eip" "ip" {
   domain   = "vpc"
-  depends_on    = [aws_internet_gateway.IGW]
 
 tags = merge( local.common_Tags,{
     Name = "${var.project}-eip"
@@ -87,12 +89,12 @@ resource "aws_nat_gateway" "roboshop-NAT" {
 
   depends_on = [aws_internet_gateway.IGW]
 
+
+}
 #   we discussed earlier like terraform bydefault knows dependencies
 # 		-> but here y we are adding explicit dependency is-> NAT gateway by default dont require internet gateway. it can be created without internet gateway also
 # 		-> but in our case, nat gateway needs to communicate to internet via internet gateway only. We know that , terraform dont know that. so we declare explictely.
 		
-}
-
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.main.id
 

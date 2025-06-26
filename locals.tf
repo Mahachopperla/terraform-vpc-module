@@ -5,5 +5,7 @@ locals {
     Terraform = true
 
   }
-  availble_zone =   data.aws_availability_zones.available.names
+  availble_zone =   slice(data.aws_availability_zones.available.names, 0, 2)
+
+  
 }
