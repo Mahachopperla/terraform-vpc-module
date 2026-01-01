@@ -35,13 +35,7 @@ resource "aws_subnet" "public" {
   })
   }
 
-#   Terraform doesn’t treat arguments inside a resource block as reusable variables
-#   unless you explicitly assign them to a local variable or directly inline the full expression again.
-#   so, we can't use like this
-#   Name = "${var.project}-public-${availability_zone}"
-#   instead we can assign this value to a variable in local and then we can use that local variable here.
 
-#if we want we can give user a chance to add tags if they want something, check in variables.tf file
 
 
 resource "aws_subnet" "private" {
@@ -91,10 +85,7 @@ resource "aws_nat_gateway" "roboshop-NAT" {
 
 
 }
-#   we discussed earlier like terraform bydefault knows dependencies
-# 		-> but here y we are adding explicit dependency is-> NAT gateway by default dont require internet gateway. it can be created without internet gateway also
-# 		-> but in our case, nat gateway needs to communicate to internet via internet gateway only. We know that , terraform dont know that. so we declare explictely.
-		
+	
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.main.id
 
