@@ -15,11 +15,6 @@ variable "database_subnet_cidr" {
     type = list
 }
 
-# here common tags like project name, environment details i want to get from user and then write common tags 
-#based on that
-
-#-> if we just declare a variable with it's type then it makes variable mandatory to provide value. so user should definitely provide a value otherwise during execution it will ask in prompt for value.
-
 
 variable "project" {
   type = string
@@ -31,17 +26,12 @@ variable "environment" {
 }
 
 
-# if we want to give a choice which is not mandatory . it's user wish to add tags or not.
-# in such cases,
-# 	along with type, we need to add default value also. which i declared in above example.
-# 	default ={} -> this declaration will not ask value from user mandatorily. it will take value if user provides, otherwise it wont rise any error.
-
 variable "public_subnet_tags" {
     type = map
     default = {}
 }
 
-#here we are giving an option to user to add tags if they want. and it is not mandatory.
+
 
 variable "private_subnet_tags" {
     type = map
